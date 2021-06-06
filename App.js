@@ -1,44 +1,42 @@
-import React, {useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import Keyboard from './components/keyboard';
-import Editor from './components/editor';
-import {Notes, Colors, Frequencies} from './constants';
-import Toolbar from './components/toolbar';
+import 'react-native-gesture-handler';
+import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import HomeScreen from './components/screens/home-screen';
+import ConnectDeviceScreen from './components/screens/connect-device-screen';
 import {StatusBar} from 'react-native';
+import {Colors} from './constants';
+import DevicePicker from './components/device-picker';
+import Toolbar from './components/toolbar';
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  let notePressedEditorCallback;
-
-  const setNotePressedEditorCallback = callback => {
-    notePressedEditorCallback = callback;
-  };
-  const onNotePressed = (note, duration, octave) => {
-    console.log(note + octave.toString() + Notes.durations[duration]);
-    var tone = Frequencies.get(Notes.notesEnglish[note])[octave];
-    console.log(tone);
-    notePressedEditorCallback(Notes.notes[note], duration, octave);
-  };
-  const onDeletePressed = () => {};
   return (
-    <View style={styles.container}>
+    <NavigationContainer>
       <StatusBar backgroundColor={Colors.primary} />
-      <Toolbar />
-      <Editor
-        style={styles.textEditor}
-        setNotePressedEditorCallback={setNotePressedEditorCallback}
-      />
-      <Keyboard
-        style={styles.keyboard}
-        onNotePressed={onNotePressed}
-        onDeletePressed={onDeletePressed}
-      />
-    </View>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: Colors.primary
+          },
+          headerTintColor: '#fff'
+        }}>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerTitle: (props) => <DevicePicker {...props} />,
+            headerRight: (props) => <Toolbar {...props} />
+          }}
+        />
+        <Stack.Screen
+          name="ConnectDevice"
+          component={ConnectDeviceScreen}
+          options={{title: 'Connect Device'}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column'
-  }
-});

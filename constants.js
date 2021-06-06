@@ -23,7 +23,7 @@ export const Notes = {
     'La♯',
     'Si'
   ],
-  unifiedNotesEngllish: [
+  unifiedNotesEnglish: [
     'C',
     'C♯',
     'D',
@@ -39,53 +39,98 @@ export const Notes = {
   ],
   rests: ['𝄾', '𝄽', '𝄼', '𝄻'],
   durations: ['♪', '♩', '𝅗𝅥', '𝅝'],
-  minOctave: 0,
-  maxOctave: 8
+  minOctave: 1,
+  maxOctave: 7
 };
 
-export const Frequencies = new Map();
-Frequencies.set(
-  'C',
-  [16.35, 32.7, 65.41, 130.81, 261.63, 523.25, 1046.5, 2093.0, 4186.01]
-);
-Frequencies.set(
-  'C♯',
-  [17.32, 34.65, 69.3, 138.59, 277.18, 554.37, 1108.73, 2217.46, 4434.92]
-);
-Frequencies.set(
-  'D',
-  [18.35, 36.71, 73.42, 146.83, 293.66, 587.33, 1174.66, 2349.32, 4698.64]
-);
-Frequencies.set(
-  'D♯',
-  [19.45, 38.89, 77.78, 155.56, 311.13, 622.25, 1244.51, 2489.02, 4978.03]
-);
-Frequencies.set(
-  'E',
-  [20.6, 41.2, 82.41, 164.81, 329.63, 659.26, 1318.51, 2637.02]
-);
-Frequencies.set(
-  'F',
-  [21.83, 43.65, 87.31, 174.61, 349.23, 698.46, 1396.91, 2793.83]
-);
-Frequencies.set(
-  'F♯',
-  [23.12, 46.25, 92.5, 185.0, 369.99, 739.99, 1479.98, 2959.96]
-);
-Frequencies.set(
-  'G',
-  [24.5, 49.0, 98.0, 196.0, 392.0, 783.99, 1567.98, 3135.96]
-);
-Frequencies.set(
-  'G♯',
-  [25.96, 51.91, 103.83, 207.65, 415.3, 830.61, 1661.22, 3322.44]
-);
-Frequencies.set('A', [27.5, 55.0, 110.0, 220.0, 440.0, 880.0, 1760.0, 3520.0]);
-Frequencies.set(
-  'A♯',
-  [29.14, 58.27, 116.54, 233.08, 466.16, 932.33, 1864.66, 3729.31]
-);
-Frequencies.set(
-  'B',
-  [30.87, 61.74, 123.47, 246.94, 493.88, 987.77, 1975.53, 3951.07]
-);
+const arduinoNotes = {
+  NOTE_B0,
+  NOTE_C1,
+  NOTE_CS1,
+  NOTE_D1,
+  NOTE_DS1,
+  NOTE_E1,
+  NOTE_F1,
+  NOTE_FS1,
+  NOTE_G1,
+  NOTE_GS1,
+  NOTE_A1,
+  NOTE_AS1,
+  NOTE_B1,
+  NOTE_C2,
+  NOTE_CS2,
+  NOTE_D2,
+  NOTE_DS2,
+  NOTE_E2,
+  NOTE_F2,
+  NOTE_FS2,
+  NOTE_G2,
+  NOTE_GS2,
+  NOTE_A2,
+  NOTE_AS2,
+  NOTE_B2,
+  NOTE_C3,
+  NOTE_CS3,
+  NOTE_D3,
+  NOTE_DS3,
+  NOTE_E3,
+  NOTE_F3,
+  NOTE_FS3,
+  NOTE_G3,
+  NOTE_GS3,
+  NOTE_A3,
+  NOTE_AS3,
+  NOTE_B3,
+  NOTE_C4,
+  NOTE_CS4,
+  NOTE_D4,
+  NOTE_DS4,
+  NOTE_E4,
+  NOTE_F4,
+  NOTE_FS4,
+  NOTE_G4,
+  NOTE_GS4,
+  NOTE_A4,
+  NOTE_AS4,
+  NOTE_B4,
+  NOTE_C5,
+  NOTE_CS5,
+  NOTE_D5,
+  NOTE_DS5,
+  NOTE_E5,
+  NOTE_F5,
+  NOTE_FS5,
+  NOTE_G5,
+  NOTE_GS5,
+  NOTE_A5,
+  NOTE_AS5,
+  NOTE_B5,
+  NOTE_C6,
+  NOTE_CS6,
+  NOTE_D6,
+  NOTE_DS6,
+  NOTE_E6,
+  NOTE_F6,
+  NOTE_FS6,
+  NOTE_G6,
+  NOTE_GS6,
+  NOTE_A6,
+  NOTE_AS6,
+  NOTE_B6,
+  NOTE_C7,
+  NOTE_CS7,
+  NOTE_D7,
+  NOTE_DS7,
+  NOTE_E7,
+  NOTE_F7,
+  NOTE_FS7,
+  NOTE_G7,
+  NOTE_GS7,
+  NOTE_A7,
+  NOTE_AS7,
+  NOTE_B7,
+  NOTE_C8,
+  NOTE_CS8,
+  NOTE_D8,
+  NOTE_DS8
+};
