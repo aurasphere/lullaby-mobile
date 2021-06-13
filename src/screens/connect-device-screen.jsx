@@ -8,10 +8,10 @@ import {
   TouchableOpacity,
   ToastAndroid
 } from 'react-native';
-import {Colors} from './../../constants';
+import {Colors} from '../constants';
 import BluetoothSerial from 'react-native-bluetooth-serial';
 import {useState} from '@hookstate/core';
-import {globalState} from '../../global-state';
+import {globalState} from '../global-state';
 
 export default function ConnectDeviceScreen({navigation}) {
   const [devices, setDevices] = React.useState();

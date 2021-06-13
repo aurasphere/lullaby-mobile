@@ -1,16 +1,17 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 import {Colors, Notes} from '../constants';
 import OctaveKey from './octave-key';
+import {insertText, backSpace} from 'react-native-custom-keyboard-kit';
+import {useState} from '@hookstate/core';
+import {globalState} from '../global-state';
+import {playNote} from '../service/device-service';
 
-function Keyboard(props) {
+export default function Keyboard(props) {
   console.log('Render keyboard');
-  const [swapped, setSwapped] = useState(false);
+  const [swapped, setSwapped] = React.useState(false);
+  const state = useState(globalState);
 
-  let octave = Notes.minOctave;
-  const onOctaveChanged = newOctave => {
-    octave = newOctave;
-  };
   const onSwapPressed = () => {
     setSwapped(!swapped);
   };
@@ -21,25 +22,41 @@ function Keyboard(props) {
     </TouchableOpacity>
   );
 
-  const noteButtons = durationIndex => {
-    if (!swapped) {
-      return Notes.notes.map((n, ni) =>
-        toButton(
-          n + Notes.durations[durationIndex],
-          () => props.onNotePressed(ni, durationIndex, octave),
-          styles.button
-        )
-      );
-    } else {
-      return Notes.alteredNotes.map((n, ni) =>
-        toButton(
-          n + Notes.durations[durationIndex],
-          () => props.onNotePressed(ni, durationIndex, octave),
-          styles.button
-        )
+  const notePressedCallback = (note, durationIndex) => () => {
+    // props.onNotePressed(Notes.unifiedNotes.indexOf(note), durationIndex);
+    const noteString =
+      note +
+      state.octave.value.toString() +
+      Notes.durations[durationIndex] +
+      ' ';
+    insertText(props.tag, noteString);
+
+    // Plays the note if not muted.
+    if (state.playLive.value && state.connectedDevice.value != null) {
+      console.log('Sending note');
+      playNote(
+        Notes.unifiedNotes.indexOf(note),
+        state.octave.value,
+        durationIndex
       );
     }
   };
+
+  const onBackspace = () => {
+    backSpace(props.tag);
+  };
+
+  const noteButtons = (durationIndex) => {
+    const notes = swapped ? Notes.alteredNotes : Notes.notes;
+    return notes.map((n) =>
+      toButton(
+        n + Notes.durations[durationIndex],
+        notePressedCallback(n, durationIndex),
+        styles.button
+      )
+    );
+  };
+
   const keyboard = (
     <View style={styles.keyboard}>
       <View style={styles.keyboardRow}>{noteButtons(0)}</View>
@@ -48,8 +65,8 @@ function Keyboard(props) {
       <View style={styles.keyboardRow}>{noteButtons(3)}</View>
       <View style={styles.keyboardRow}>
         {toButton('♯/𝄽', onSwapPressed, styles.buttonBig)}
-        <OctaveKey onOctaveChanged={onOctaveChanged} />
-        {toButton('←', props.onDeletePressed, styles.buttonBig)}
+        <OctaveKey />
+        {toButton('←', onBackspace, styles.buttonBig)}
       </View>
     </View>
   );
@@ -57,12 +74,9 @@ function Keyboard(props) {
   return keyboard;
 }
 
-export default React.memo(Keyboard);
-
 const styles = StyleSheet.create({
   keyboard: {
-    flex: 4,
-    backgroundColor: Colors.primary
+    flex: 12
   },
   button: {
     flex: 1,
