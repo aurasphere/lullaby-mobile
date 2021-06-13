@@ -9,12 +9,9 @@ import {Colors} from './src/constants';
 import DevicePicker from './src/components/device-picker';
 import Toolbar from './src/components/toolbar';
 import {OverflowMenuProvider} from 'react-navigation-header-buttons';
-import {register} from 'react-native-custom-keyboard-kit';
-import Keyboard from './src/components/keyboard';
 import SplashScreen from './src/screens/splash-screen';
 
 const Stack = createStackNavigator();
-register('notes', () => Keyboard);
 export default function App() {
   return (
     <NavigationContainer>

@@ -5,5 +5,6 @@ export const globalState = createState({
   playLive: true,
   octave: 4,
   dirtyEditor: false,
-  editorContent: ''
+  editorContent: '',
+  swappedKeyboard: false
 });

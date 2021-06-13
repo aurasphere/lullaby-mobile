@@ -1,10 +1,10 @@
 import React from 'react';
-import {StyleSheet, View, Image} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {splashScreenDurationMillis, Colors} from '../constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SplashScreen({navigation}) {
-  setTimeout(() => navigation.navigate('Home'), splashScreenDurationMillis);
+  setTimeout(() => navigation.replace('Home'), splashScreenDurationMillis);
 
   return (
     <View style={styles.container}>

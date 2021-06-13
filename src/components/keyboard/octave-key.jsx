@@ -5,28 +5,28 @@ import {globalState} from '../global-state';
 import {useState} from '@hookstate/core';
 
 export default function OctaveKey() {
-  console.log('Rendering octave key');
+  console.log('Render octave key');
   const state = useState(globalState);
 
-  const onOctaveControlPressed = async (increment) => {
-    if (state.octave.value === Notes.minOctave && increment === -1)
-      state.octave.set(Notes.maxOctave);
-    else if (state.octave.value === Notes.maxOctave && increment === 1)
-      state.octave.set(Notes.minOctave);
-    else state.octave.set((octave) => octave + increment);
-  };
+  const incrementOctave = () =>
+    state.octave.set((octave) =>
+      octave === Notes.maxOctave ? Notes.minOctave : octave + 1
+    );
 
-  const toButton = (text, onPressed) => (
-    <TouchableOpacity onPress={onPressed} style={styles.button}>
-      <Text style={styles.text}>{text}</Text>
-    </TouchableOpacity>
-  );
+  const decrementOctave = () =>
+    state.octave.set((octave) =>
+      octave === Notes.minOctave ? Notes.maxOctave : octave - 1
+    );
 
   return (
     <View style={styles.octaveKey}>
-      {toButton('<', () => onOctaveControlPressed(-1))}
+      <TouchableOpacity onPress={decrementOctave} style={styles.button}>
+        <Text style={styles.text}>{'<'}</Text>
+      </TouchableOpacity>
       <Text style={styles.text}>Octave {state.octave.value}</Text>
-      {toButton('>', () => onOctaveControlPressed(1))}
+      <TouchableOpacity onPress={incrementOctave} style={styles.button}>
+        <Text style={styles.text}>{'>'}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
