@@ -1,45 +1,64 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import KeyboardNoteButton from './keyboard-note-button';
+import KeyboardRestButton from './keyboard-rest-button';
 
 export default function KeyboardRow(props) {
-  console.log('Render keyboardRow');
   return (
     <View style={styles.keyboardRow}>
       <KeyboardNoteButton
-        swappable={true}
-        note={'Do'}
+        alterable={true}
+        altered={props.altered}
+        noteIndex={0}
         duration={props.duration}
+        extended={props.extended}
       />
       <KeyboardNoteButton
-        swappable={true}
-        note={'Re'}
+        alterable={true}
+        altered={props.altered}
+        noteIndex={1}
         duration={props.duration}
+        extended={props.extended}
       />
       <KeyboardNoteButton
-        swappable={false}
-        note={'Mi'}
+        alterable={false}
+        altered={props.altered}
+        noteIndex={2}
         duration={props.duration}
+        extended={props.extended}
       />
       <KeyboardNoteButton
-        swappable={true}
-        note={'Fa'}
+        alterable={true}
+        altered={props.altered}
+        noteIndex={3}
         duration={props.duration}
+        extended={props.extended}
       />
       <KeyboardNoteButton
-        swappable={true}
-        note={'Sol'}
+        alterable={true}
+        altered={props.altered}
+        noteIndex={4}
         duration={props.duration}
+        extended={props.extended}
       />
       <KeyboardNoteButton
-        swappable={true}
-        note={'La'}
+        alterable={true}
+        altered={props.altered}
+        noteIndex={5}
         duration={props.duration}
+        extended={props.extended}
       />
       <KeyboardNoteButton
-        swappable={false}
-        note={'Si'}
+        alterable={false}
+        altered={props.altered}
+        noteIndex={6}
         duration={props.duration}
+        extended={props.extended}
+      />
+      <KeyboardRestButton
+        altered={props.altered}
+        duration={props.duration}
+        extended={props.extended}
       />
     </View>
   );

@@ -146,12 +146,23 @@ android {
             include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
+
+    def buildSecretPropertiesFile = rootProject.file('lullaby-secret.properties')
+    def buildSecretProperties = new Properties()
+    buildSecretProperties.load(new FileInputStream(buildSecretPropertiesFile))
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            storeFile file(buildSecretProperties["release.store.file"])
+            storePassword buildSecretProperties["release.store.password"]
+            keyAlias buildSecretProperties["release.key.alias"]
+            keyPassword buildSecretProperties["release.key.password"]
         }
     }
     buildTypes {
@@ -161,7 +172,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

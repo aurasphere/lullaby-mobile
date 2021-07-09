@@ -1,11 +1,9 @@
 import React from 'react';
 import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {Colors, Notes} from '../constants';
-import {globalState} from '../global-state';
+import {Colors, Notes, globalState} from '../../config';
 import {useState} from '@hookstate/core';
 
 export default function OctaveKey() {
-  console.log('Render octave key');
   const state = useState(globalState);
 
   const incrementOctave = () =>

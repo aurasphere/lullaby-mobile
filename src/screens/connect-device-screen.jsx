@@ -8,10 +8,9 @@ import {
   TouchableOpacity,
   ToastAndroid
 } from 'react-native';
-import {Colors} from '../constants';
+import {Colors, globalState} from '../config';
 import BluetoothSerial from 'react-native-bluetooth-serial';
 import {useState} from '@hookstate/core';
-import {globalState} from '../global-state';
 
 export default function ConnectDeviceScreen({navigation}) {
   const [devices, setDevices] = React.useState();
@@ -23,10 +22,15 @@ export default function ConnectDeviceScreen({navigation}) {
       ToastAndroid.show(outcome.message, ToastAndroid.SHORT);
       navigation.goBack();
       state.connectedDevice.set(device);
+      BluetoothSerial.on('connectionLost', () => {
+        state.connectedDevice.set(null);
+        ToastAndroid.show('Connection lost with device', ToastAndroid.SHORT);
+        BluetoothSerial.removeListener('connectionLost');
+      });
       console.log(outcome);
     } catch (error) {
       console.error(error);
-      ToastAndroid.show(error);
+      ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
     }
   };
 
@@ -48,21 +52,23 @@ export default function ConnectDeviceScreen({navigation}) {
     });
   }
 
-  const startScanning = async () => {
+  async function startScan() {
     const isEnabled = await BluetoothSerial.isEnabled();
     if (!isEnabled) {
       await BluetoothSerial.enable();
     }
     const devicesFound = await BluetoothSerial.discoverUnpairedDevices();
-    const deduplicatedDevices = uniqBy(devicesFound, (d) => d.id);
+    const deduplicatedDevices = uniqBy(devicesFound, (d) => d.id).filter(
+      (d) => d.name != null
+    );
     setDevices(deduplicatedDevices);
     console.log(JSON.stringify(deduplicatedDevices));
-    BluetoothSerial.cancelDiscovery();
+    //     BluetoothSerial.cancelDiscovery();
     console.log('Fine');
-  };
+  }
 
   if (devices === undefined) {
-    startScanning();
+    startScan();
     return (
       <View style={styles.centerVertical}>
         <ActivityIndicator size="large" color={Colors.primary} />

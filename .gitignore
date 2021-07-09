@@ -57,3 +57,5 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+/android/app/app-keystore.jks
+/android/lullaby-secret.properties

@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {splashScreenDurationMillis, Colors} from '../constants';
+import {splashScreenDurationMillis, Colors} from '../config';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SplashScreen({navigation}) {
