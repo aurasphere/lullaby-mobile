@@ -32,7 +32,10 @@ export default function ConnectDeviceScreen({navigation}) {
       console.log(outcome);
     } catch (error) {
       console.error(error);
-      ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
+      ToastAndroid.show(
+        error?.toString() ?? 'Error during connection',
+        ToastAndroid.SHORT
+      );
     }
   };
 

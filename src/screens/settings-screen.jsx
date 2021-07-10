@@ -23,6 +23,7 @@ export default function SettingsScreen() {
       return;
     }
     state.bpm.set(parseInt(bpm.replace(/[+-,. ]/g, ''), 10));
+    state.dirtyEditor.set(true);
   };
   const onMaxEditorContentLengthChange = (maxEditorContentLength) => {
     if (maxEditorContentLength === '') {
@@ -35,6 +36,7 @@ export default function SettingsScreen() {
   };
   const onTimeSignaturePress = (value) => {
     state.beatUnit.set(value);
+    state.dirtyEditor.set(true);
   };
   const onNotationChanged = (useSolFa) => {
     saveSolFaNotation(useSolFa);

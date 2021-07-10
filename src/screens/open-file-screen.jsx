@@ -21,7 +21,7 @@ export default function OpenFileScreen({navigation}) {
 
     if (notes.length > globalState.maxEditorContentLength.value) {
       // For this session, extends the maxEditorContentLength to match the melody.
-      globalState.maxEditorContentLength.value = notes.length;
+      globalState.maxEditorContentLength.set(notes.length);
     }
 
     globalState.workingFile.set(file.name.slice(0, -4));
@@ -61,8 +61,6 @@ export default function OpenFileScreen({navigation}) {
     );
   }
 
-  const closeDialog = () => setShowDialog(false);
-
   return (
     <FlatList
       data={files}
@@ -70,6 +68,7 @@ export default function OpenFileScreen({navigation}) {
       keyExtractor={(item) => item.name}
       ListEmptyComponent={emptyListComponent()}
       ItemSeparatorComponent={itemSeparatorComponent}
+      contentContainerStyle={styles.contentContainerStyle}
     />
   );
 }
@@ -94,5 +93,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginLeft: 5,
     marginRight: 5
+  },
+  contentContainerStyle: {
+    flexGrow: 1
   }
 });

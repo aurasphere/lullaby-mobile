@@ -21,17 +21,17 @@ export default function Toolbar({navigation}) {
   const [showOverwriteDialog, setShowOverwriteDialog] = React.useState(false);
   const [fileName, setFileName] = React.useState('');
 
-  const toggleAudio = () => {
-    state.playLive.set(!state.playLive.value);
-  };
-
-  const onPlayClick = () => {
-    playMelody();
-  };
-
-  const onSaveClick = () => {
-    saveFile(state.workingFile.value);
-  };
+  const toggleAudio = () => state.playLive.set(!state.playLive.value);
+  const onSaveClick = () => saveFile(state.workingFile.value);
+  const onSaveAsClick = () => setShowFileNameDialog(true);
+  const onSettingsClick = () => navigation.navigate('Settings');
+  const cancelOpenFile = () => setShowOpenFileConfirmation(false);
+  const cancelFileNameDialog = () => setShowFileNameDialog(false);
+  const onExportClick = () =>
+    saveMelody(state.notes.value, state.bpm.value, state.beatUnit.value);
+  const overflowIcon = (
+    <MaterialIcons name="more-vert" style={styles.iconOverflow} />
+  );
 
   const saveFile = (file) => {
     const serializedMelody = serializeMelody(
@@ -43,14 +43,6 @@ export default function Toolbar({navigation}) {
     state.dirtyEditor.set(false);
   };
 
-  const onSaveAsClick = () => {
-    setShowFileNameDialog(true);
-  };
-
-  const onExportClick = () => {
-    saveMelody(state.notes.value, state.bpm.value, state.beatUnit.value);
-  };
-
   const onOpenClick = () => {
     if (state.dirtyEditor.value) {
       setShowOpenFileConfirmation(true);
@@ -59,41 +51,28 @@ export default function Toolbar({navigation}) {
     }
   };
 
-  const confirmOpenFile = async () => {
-    await setShowOpenFileConfirmation(false);
+  const confirmOpenFile = () => {
+    setShowOpenFileConfirmation(false);
     navigation.navigate('OpenFile');
   };
 
-  const onSettingsClick = () => {
-    navigation.navigate('Settings');
-  };
-
-  const cancelOpenFile = () => setShowOpenFileConfirmation(false);
-
   const onImportClick = async () => {
-    const {header, notes} = await loadMelody();
+    loadMelody(({header, notes}) => {
+      console.log(JSON.stringify(header));
+      if (notes.length > state.maxEditorContentLength.value) {
+        // For this session, extends the maxEditorContentLength to match the melody.
+        state.maxEditorContentLength.set(notes.length);
+      }
 
-    if (notes.length > state.maxEditorContentLength.value) {
-      // For this session, extends the maxEditorContentLength to match the melody.
-      state.maxEditorContentLength.value = notes.length;
-    }
-
-    state.notes.set(notes);
-    state.bpm.set(header.bpm);
-    state.beatUnit.set(header.beatUnit);
-    state.dirtyEditor.set(true);
+      state.notes.set(notes);
+      state.bpm.set(header.bpm);
+      state.beatUnit.set(header.beatUnit);
+      state.dirtyEditor.set(true);
+    });
   };
 
-  const overflowIcon = () => (
-    <MaterialIcons name="more-vert" style={styles.iconOverflow} />
-  );
-
-  const cancelFileNameDialog = () => {
-    setShowFileNameDialog(false);
-  };
-
-  const confirmFileNameDialog = () => {
-    if (FileService.fileExists(fileName)) {
+  const confirmFileNameDialog = async () => {
+    if (await FileService.fileExists(fileName)) {
       setShowOverwriteDialog(true);
       setShowFileNameDialog(false);
     } else {
@@ -124,7 +103,7 @@ export default function Toolbar({navigation}) {
               name={state.playLive.value ? 'volume-up' : 'volume-off'}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onPlayClick}>
+          <TouchableOpacity onPress={playMelody}>
             <MaterialIcons style={styles.icon} name="play-circle-outline" />
           </TouchableOpacity>
         </>

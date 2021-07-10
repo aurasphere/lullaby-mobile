@@ -1,14 +1,17 @@
 import React, {useRef} from 'react';
 import {StyleSheet, View, Text, ScrollView} from 'react-native';
 import {useState} from '@hookstate/core';
-import {maxEditorContentLength, Notes, globalState} from '../config';
+import {Notes, globalState} from '../config';
 
 export default function Editor() {
   const state = useState(globalState);
 
   const noteCounterTextStyle = {
     ...styles.noteCounterText,
-    color: state.notes.value.length === maxEditorContentLength ? 'red' : 'black'
+    color:
+      state.notes.value.length >= state.maxEditorContentLength.value
+        ? 'red'
+        : 'black'
   };
 
   const noteToString = (note) => {
@@ -57,7 +60,9 @@ export default function Editor() {
 }
 
 export function writeEditorNote(note) {
-  if (globalState.notes.value.length === maxEditorContentLength) {
+  if (
+    globalState.notes.value.length >= globalState.maxEditorContentLength.value
+  ) {
     return false;
   }
   globalState.notes.set((n) => {

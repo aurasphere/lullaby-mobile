@@ -14,12 +14,25 @@ export function playNotes(notes, bpm, beatUnit) {
   BluetoothSerial.write('n' + serializeMelody(notes, bpm, beatUnit) + '\n');
 }
 
-export async function loadMelody() {
+export function loadMelody(callback) {
   console.log('Importing from device');
+  serialCallbackWrapper.callback = callback;
   BluetoothSerial.write('e\n');
-  const response = await BluetoothSerial.readFromDevice();
-  return deserializeMelody(response.split('\n')[0]);
 }
+
+const serialCallbackWrapper = {
+  callback: null,
+  wrapperFunction: ({data}) => {
+    console.log(`DATA FROM BLUETOOTH: ${data}`);
+    if (serialCallbackWrapper.callback != null) {
+      serialCallbackWrapper.callback(deserializeMelody(data.split('\n')[0]));
+      serialCallbackWrapper.callback = null;
+    }
+  }
+};
+BluetoothSerial.withDelimiter('\n').then(() =>
+  BluetoothSerial.on('read', serialCallbackWrapper.wrapperFunction)
+);
 
 export function serializeMelody(notes, bpm, beatUnit) {
   const header = serializeHeader(bpm, beatUnit);
@@ -30,7 +43,8 @@ export function serializeMelody(notes, bpm, beatUnit) {
 
 export function deserializeMelody(melodyString) {
   const header = deserializeHeader(melodyString.substring(0, 3));
-  const notes = melodyString.substring(3).match(/.{3}/g).map(deserializeNote);
+  const notes =
+    melodyString.substring(3).match(/.{3}/g)?.map(deserializeNote) ?? [];
   return {header, notes};
 }
 
@@ -52,7 +66,9 @@ function serializeNote(note) {
   const firstByteValue = (note.pitch << 5) + (note.duration << 3) + note.octave;
   const secondByteValue =
     (note.extended ? 1 << 3 : 0) + (note.altered ? 1 << 2 : 0);
-  return firstByteValue.toString(16) + secondByteValue.toString(16);
+  return (
+    firstByteValue.toString(16).padStart(2, '0') + secondByteValue.toString(16)
+  );
 }
 
 function deserializeNote(noteString) {
@@ -74,7 +90,7 @@ function deserializeNote(noteString) {
 //        2 = */4 (quarter note)
 //        3 = */8 (eight note)
 function serializeHeader(bpm, beatUnit) {
-  return bpm.toString(16) + beatUnit;
+  return bpm.toString(16).padStart(2, '0') + beatUnit;
 }
 
 function deserializeHeader(headerString) {
