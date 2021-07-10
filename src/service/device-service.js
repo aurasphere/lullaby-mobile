@@ -69,7 +69,7 @@ function deserializeNote(noteString) {
 
 // Header
 // 2 char hex => bpm
-// 1 char dec => beat note
+// 1|2|3 => beat note
 //        1 = */2 (half note)
 //        2 = */4 (quarter note)
 //        3 = */8 (eight note)
