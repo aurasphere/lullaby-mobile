@@ -14,9 +14,11 @@ export function playNotes(notes, bpm, beatUnit) {
   BluetoothSerial.write('n' + serializeMelody(notes, bpm, beatUnit) + '\n');
 }
 
-export function loadMelody() {
-  // e
-  //BluetoothSerial.write(
+export async function loadMelody() {
+  console.log('Importing from device');
+  BluetoothSerial.write('e\n');
+  const response = await BluetoothSerial.readFromDevice();
+  return deserializeMelody(response.split('\n')[0]);
 }
 
 export function serializeMelody(notes, bpm, beatUnit) {
@@ -29,7 +31,6 @@ export function serializeMelody(notes, bpm, beatUnit) {
 export function deserializeMelody(melodyString) {
   const header = deserializeHeader(melodyString.substring(0, 3));
   const notes = melodyString.substring(3).match(/.{3}/g).map(deserializeNote);
-  console.log(header + notes);
   return {header, notes};
 }
 
@@ -48,11 +49,6 @@ duration:
  3 = eight note
 */
 function serializeNote(note) {
-  console.log(note.pitch);
-  console.log(note.pitch << 5);
-  console.log(note.duration << 3);
-  console.log(note.octave);
-  console.log((note.pitch << 5) + (note.duration << 3) + note.octave);
   const firstByteValue = (note.pitch << 5) + (note.duration << 3) + note.octave;
   const secondByteValue =
     (note.extended ? 1 << 3 : 0) + (note.altered ? 1 << 2 : 0);
@@ -78,7 +74,6 @@ function deserializeNote(noteString) {
 //        2 = */4 (quarter note)
 //        3 = */8 (eight note)
 function serializeHeader(bpm, beatUnit) {
-  console.log('bpm: ' + JSON.stringify({bpm, beatUnit}));
   return bpm.toString(16) + beatUnit;
 }
 

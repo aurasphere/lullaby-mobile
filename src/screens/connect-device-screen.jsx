@@ -6,7 +6,8 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  RefreshControl
 } from 'react-native';
 import {Colors, globalState} from '../config';
 import BluetoothSerial from 'react-native-bluetooth-serial';
@@ -14,6 +15,7 @@ import {useState} from '@hookstate/core';
 
 export default function ConnectDeviceScreen({navigation}) {
   const [devices, setDevices] = React.useState();
+  const [scanning, setScanning] = React.useState(true);
   const state = useState(globalState);
 
   const connectDevice = async (device) => {
@@ -53,6 +55,8 @@ export default function ConnectDeviceScreen({navigation}) {
   }
 
   async function startScan() {
+    console.log('Starting Bluetooth scan');
+    setScanning(true);
     const isEnabled = await BluetoothSerial.isEnabled();
     if (!isEnabled) {
       await BluetoothSerial.enable();
@@ -61,14 +65,21 @@ export default function ConnectDeviceScreen({navigation}) {
     const deduplicatedDevices = uniqBy(devicesFound, (d) => d.id).filter(
       (d) => d.name != null
     );
-    setDevices(deduplicatedDevices);
-    console.log(JSON.stringify(deduplicatedDevices));
-    //     BluetoothSerial.cancelDiscovery();
-    console.log('Fine');
+    if (scanning) {
+      setDevices(deduplicatedDevices);
+    }
+    setScanning(false);
   }
 
-  if (devices === undefined) {
+  React.useEffect(() => {
     startScan();
+    return function cleanup() {
+      BluetoothSerial.cancelDiscovery();
+      setScanning(false);
+    };
+  }, []);
+
+  if (scanning) {
     return (
       <View style={styles.centerVertical}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -85,9 +96,11 @@ export default function ConnectDeviceScreen({navigation}) {
     );
   };
 
-  const itemSeparatorComponent = () => {
-    return <View style={styles.separator} />;
-  };
+  const itemSeparatorComponent = () => <View style={styles.separator} />;
+
+  const refreshControlComponent = (
+    <RefreshControl refreshing={scanning} onRefresh={startScan} />
+  );
 
   return (
     <FlatList
@@ -96,6 +109,8 @@ export default function ConnectDeviceScreen({navigation}) {
       keyExtractor={(item) => item.id}
       ListEmptyComponent={emptyListComponent()}
       ItemSeparatorComponent={itemSeparatorComponent}
+      refreshControl={refreshControlComponent}
+      contentContainerStyle={styles.contentContainerStyle}
     />
   );
 }
@@ -120,5 +135,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginLeft: 5,
     marginRight: 5
+  },
+  contentContainerStyle: {
+    flexGrow: 1
   }
 });

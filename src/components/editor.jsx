@@ -12,7 +12,6 @@ export default function Editor() {
   };
 
   const noteToString = (note) => {
-    console.log(JSON.stringify(note));
     const toNoteString = () =>
       state.noteNames.value[note.pitch - 1] +
       (note.altered ? '♯' : '') +
@@ -50,7 +49,7 @@ export default function Editor() {
           </Text>
         )}
         <Text style={noteCounterTextStyle}>
-          {state.notes.value.length}/{maxEditorContentLength}
+          {state.notes.value.length}/{state.maxEditorContentLength.value}
         </Text>
       </View>
     </View>

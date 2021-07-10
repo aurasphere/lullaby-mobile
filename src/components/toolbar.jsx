@@ -9,7 +9,8 @@ import FileService from '../service/file-service';
 import {
   serializeMelody,
   saveMelody,
-  playMelody
+  playMelody,
+  loadMelody
 } from '../service/device-service';
 
 export default function Toolbar({navigation}) {
@@ -47,11 +48,7 @@ export default function Toolbar({navigation}) {
   };
 
   const onExportClick = () => {
-    saveMelody(
-      globalState.notes.value,
-      globalState.bpm.value,
-      globalState.beatUnit.value
-    );
+    saveMelody(state.notes.value, state.bpm.value, state.beatUnit.value);
   };
 
   const onOpenClick = () => {
@@ -73,8 +70,18 @@ export default function Toolbar({navigation}) {
 
   const cancelOpenFile = () => setShowOpenFileConfirmation(false);
 
-  const onImportClick = () => {
-    // TODO
+  const onImportClick = async () => {
+    const {header, notes} = await loadMelody();
+
+    if (notes.length > state.maxEditorContentLength.value) {
+      // For this session, extends the maxEditorContentLength to match the melody.
+      state.maxEditorContentLength.value = notes.length;
+    }
+
+    state.notes.set(notes);
+    state.bpm.set(header.bpm);
+    state.beatUnit.set(header.beatUnit);
+    state.dirtyEditor.set(true);
   };
 
   const overflowIcon = () => (
@@ -109,15 +116,20 @@ export default function Toolbar({navigation}) {
 
   return (
     <View style={styles.toolbar}>
-      <TouchableOpacity onPress={toggleAudio}>
-        <MaterialIcons
-          style={styles.icon}
-          name={state.playLive.value ? 'volume-up' : 'volume-off'}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onPlayClick}>
-        <MaterialIcons style={styles.icon} name="play-circle-outline" />
-      </TouchableOpacity>
+      {state.connectedDevice.value != null && (
+        <>
+          <TouchableOpacity onPress={toggleAudio}>
+            <MaterialIcons
+              style={styles.icon}
+              name={state.playLive.value ? 'volume-up' : 'volume-off'}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onPlayClick}>
+            <MaterialIcons style={styles.icon} name="play-circle-outline" />
+          </TouchableOpacity>
+        </>
+      )}
+
       <OverflowMenu OverflowIcon={overflowIcon}>
         {state.workingFile.value != null && (
           <HiddenItem title="Save" onPress={onSaveClick} />

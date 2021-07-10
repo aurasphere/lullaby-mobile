@@ -1,4 +1,5 @@
 import {fileExtension, fileEncoding} from '../config';
+import {ToastAndroid} from 'react-native';
 
 var RNFS = require('react-native-fs');
 
@@ -11,6 +12,7 @@ export default class FileService {
       console.log('File written to ' + path);
     } catch (error) {
       console.log(error.message);
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
   }
 

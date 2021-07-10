@@ -8,33 +8,28 @@ import {
   ActivityIndicator
 } from 'react-native';
 import FileService from '../service/file-service';
-import {Colors, maxEditorContentLength, globalState} from '../config';
-import Dialog from 'react-native-dialog';
+import {Colors, globalState} from '../config';
 import {deserializeMelody} from '../service/device-service';
 
 export default function OpenFileScreen({navigation}) {
   const [files, setFiles] = React.useState(null);
-  const [showDialog, setShowDialog] = React.useState(false);
   React.useEffect(() => FileService.listLullabyFiles().then(setFiles), []);
 
   const openFile = async (file) => {
     const fileContent = await FileService.readFile(file);
     const {header, notes} = deserializeMelody(fileContent);
 
-    console.log(JSON.stringify(fileContent.split(' ')));
-    if (notes.length > maxEditorContentLength) {
-      // The file is invalid, show a dialog error
-      // XXX: more file validity check?
-      setShowDialog(true);
-    } else {
-      console.log(JSON.stringify(notes));
-      globalState.workingFile.set(file.name.slice(0, -4));
-      globalState.notes.set(notes);
-      globalState.bpm.set(header.bpm);
-      globalState.beatUnit.set(header.beatUnit);
-      globalState.dirtyEditor.set(false);
-      navigation.goBack();
+    if (notes.length > globalState.maxEditorContentLength.value) {
+      // For this session, extends the maxEditorContentLength to match the melody.
+      globalState.maxEditorContentLength.value = notes.length;
     }
+
+    globalState.workingFile.set(file.name.slice(0, -4));
+    globalState.notes.set(notes);
+    globalState.bpm.set(header.bpm);
+    globalState.beatUnit.set(header.beatUnit);
+    globalState.dirtyEditor.set(false);
+    navigation.goBack();
   };
 
   const renderItem = (item) => {
@@ -69,20 +64,13 @@ export default function OpenFileScreen({navigation}) {
   const closeDialog = () => setShowDialog(false);
 
   return (
-    <>
-      <FlatList
-        data={files}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.name}
-        ListEmptyComponent={emptyListComponent()}
-        ItemSeparatorComponent={itemSeparatorComponent}
-      />
-      <Dialog.Container visible={showDialog}>
-        <Dialog.Title>Error</Dialog.Title>
-        <Dialog.Description>The given file is invalid</Dialog.Description>
-        <Dialog.Button label="OK" onPress={closeDialog} />
-      </Dialog.Container>
-    </>
+    <FlatList
+      data={files}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.name}
+      ListEmptyComponent={emptyListComponent()}
+      ItemSeparatorComponent={itemSeparatorComponent}
+    />
   );
 }
 
