@@ -9,7 +9,7 @@
     "test": "jest",
     "lint": "eslint .",
     "android-release": "npx react-native run-android --variant=release",
-    "android-build-release": "cd android && gradlew installBundle"
+    "android-build-release": "cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
     "@hookstate/core": "^3.0.7",
