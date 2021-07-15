@@ -60,6 +60,7 @@ export default function ConnectDeviceScreen({navigation}) {
   async function startScan() {
     console.log('Starting Bluetooth scan');
     setScanning(true);
+
     const isEnabled = await BluetoothSerial.isEnabled();
     if (!isEnabled) {
       await BluetoothSerial.enable();
